@@ -24,4 +24,10 @@ public interface NoteRepository extends CrudRepository <Note, Long> {
                 @Param("imageUrl") String imageUrl,
                 @Param("fileUrl") String fileUrl,
                 @Param("note_owner_id") Long note_owner_id);
+
+
+    @Modifying
+    @Query("DELETE FROM Note n WHERE n.id = :id")
+    void delete(@Param("id") Long id);
+
 }
