@@ -23,7 +23,7 @@ public interface NoteRepository extends CrudRepository <Note, Long> {
     @Query(value = "INSERT INTO Note n (n.title, n.tag, n.favourite, n.content, n.imageUrl, n.fileUrl, n.note_owner_id) VALUES (:title, :tag, :favourite, :content, :imageUrl, :fileUrl, :note_owner_id);", nativeQuery = true)
     void create(@Param("title") String title,
                 @Param("tag") String tag,
-                @Param("favourite") boolean favourite,
+                @Param("favourite") Boolean favourite,
                 @Param("content") String content,
                 @Param("imageUrl") String imageUrl,
                 @Param("fileUrl") String fileUrl,
@@ -38,7 +38,7 @@ public interface NoteRepository extends CrudRepository <Note, Long> {
     @Query("UPDATE Note n SET n.title = :title, n.tag = :tag, n.favourite = :favourite, n.content = :content, n.imageUrl = :imageUrl, n.fileUrl = :fileUrl WHERE n.id = :id")
     void update(@Param("title") String title,
                 @Param("tag") String tag,
-                @Param("favourite") boolean favourite,
+                @Param("favourite") Boolean favourite,
                 @Param("content") String content,
                 @Param("imageUrl") String imageUrl,
                 @Param("fileUrl") String fileUrl,
