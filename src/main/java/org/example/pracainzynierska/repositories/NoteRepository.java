@@ -18,12 +18,12 @@ public class NoteRepository {
 
     public List<Note> findAllUserNotes(Long userid){
         String sql = "SELECT n from Note n WHERE n.note_owner_id = ?";
-        return jdbcTemplate.query(sql, new Object[]{userid}, new NoteMapper());
+        return jdbcTemplate.query(sql, new NoteMapper(), userid);
     }
 
     public Note findById(Long id){
         String sql = "SELECT n from Note n WHERE n.id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{id}, new NoteMapper());
+        return jdbcTemplate.queryForObject(sql, new NoteMapper(), id);
     }
 
     public void create(String title, String tag, Boolean favourite, String content, String imageUrl, String fileUrl, Long note_owner_id){

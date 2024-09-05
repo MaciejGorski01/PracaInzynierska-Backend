@@ -28,7 +28,7 @@ public class UserRepository {
 
     public User findById(Long id){
         String sql = "SELECT u FROM User u WHERE u.id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[] {id}, new UserMapper());
+        return jdbcTemplate.queryForObject(sql, new UserMapper(), id);
     }
 
     public void create(String password, String email, String name, String surname){
@@ -38,7 +38,7 @@ public class UserRepository {
 
     public User findUserByEmail(String email){
         String sql = "SELECT u FROM User u WHERE u.email = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{email}, new UserMapper());
+        return jdbcTemplate.queryForObject(sql, new UserMapper(), email);
     }
 
     public void update(String password, String email, String name, String surname, Long id){
