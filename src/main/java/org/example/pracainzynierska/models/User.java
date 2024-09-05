@@ -9,12 +9,11 @@ import lombok.Setter;
 
 import java.util.List;
 
-@Entity
+
 @Getter
 @Setter
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+
     Long id;
 
     @NotEmpty(message = "This field can't be empty!")
@@ -30,8 +29,5 @@ public class User {
 
     @NotEmpty(message = "This field can't be empty!")
     String surname;
-
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "note_owner_id", orphanRemoval = true)
-    private List<Note> notes;
 
 }

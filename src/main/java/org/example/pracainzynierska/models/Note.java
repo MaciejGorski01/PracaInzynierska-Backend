@@ -6,13 +6,11 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-@Entity
+
 @Getter
 @Setter
 public class Note {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @NotEmpty(message = "This field can't be empty!")
@@ -32,8 +30,6 @@ public class Note {
 
     String fileUrl;
 
-    @ManyToOne
-    @JoinColumn(name = "note_owner_id")
-    private User note_owner_id;
+    Long note_owner_id;
 
 }
