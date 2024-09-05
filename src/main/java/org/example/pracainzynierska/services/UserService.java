@@ -39,10 +39,13 @@ public class UserService {
         return userRepository.create(user.getPassword(), user.getEmail(), user.getName(), user.getSurname());
     }
 
-    //todo:
-    //reverse mapping
-    //update
-    //delete
+    public void deleteUser(Long id){
+        userRepository.delete(id);
+    }
+
+    public void updateUser(User user){
+        userRepository.update(user.getPassword(), user.getEmail(), user.getName(), user.getSurname(), user.getId());
+    }
 
     public UserDto mapToUserDto(User user){
         UserDto userDto = new UserDto(user.getId(), user.getPassword(), user.getEmail(), user.getName(), user.getSurname());
