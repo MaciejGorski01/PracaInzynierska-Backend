@@ -22,7 +22,7 @@ public class UserService {
     }
 
     public UserDto findUserById(Long id){
-        User user = userRepository.findById(id).get();
+        User user = userRepository.findById(id);
         return mapToUserDto(user);
     }
 
@@ -35,8 +35,8 @@ public class UserService {
         }
     }
 
-    public User addUser(User user){
-        return userRepository.create(user.getPassword(), user.getEmail(), user.getName(), user.getSurname());
+    public void addUser(User user){
+        userRepository.create(user.getPassword(), user.getEmail(), user.getName(), user.getSurname());
     }
 
     public void deleteUser(Long id){
