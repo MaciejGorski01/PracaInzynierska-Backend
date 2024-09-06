@@ -7,8 +7,6 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public record NoteDto(
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
         Long id,
 
         @NotEmpty(message = "This field can't be empty!")
