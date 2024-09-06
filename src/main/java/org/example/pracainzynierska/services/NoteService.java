@@ -5,7 +5,7 @@ import org.example.pracainzynierska.models.Note;
 import org.example.pracainzynierska.repositories.NoteRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class NoteService {
@@ -15,21 +15,21 @@ public class NoteService {
         this.noteRepository = noteRepository;
     }
 
-    public List<NoteDto> findAllUserNotes(Long userid){
+    public List<NoteDto> findAllUserNotes(String userid){
         List<Note> notes = noteRepository.findAllUserNotes(userid);
         return notes.stream().map(this::mapToNoteDto).toList();
     }
 
-    public NoteDto findNoteById(Long id){
+    public NoteDto findNoteById(String id){
         Note note = noteRepository.findById(id);
         return mapToNoteDto(note);
     }
 
     public void addNote(Note note) {
-        noteRepository.create(note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getImageUrl(), note.getFileUrl(), note.getNote_owner_id());
+        noteRepository.create(UUID.randomUUID().toString(), note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getImageUrl(), note.getFileUrl(), note.getNote_owner_id());
     }
 
-    public void deleteNote(Long id){
+    public void deleteNote(String id){
         noteRepository.delete(id);
     }
 

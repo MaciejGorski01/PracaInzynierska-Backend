@@ -21,7 +21,7 @@ public class UserService {
         return users.stream().map(this::mapToUserDto).toList();
     }
 
-    public UserDto findUserById(Long id){
+    public UserDto findUserById(String id){
         User user = userRepository.findById(id);
         return mapToUserDto(user);
     }
@@ -39,7 +39,8 @@ public class UserService {
         userRepository.create(user.getPassword(), user.getEmail(), user.getName(), user.getSurname());
     }
 
-    public void deleteUser(Long id){
+    public void deleteUser(String id){
+
         userRepository.delete(id);
     }
 

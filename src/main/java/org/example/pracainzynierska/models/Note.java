@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 public class Note {
 
-    Long id;
+    String id;
 
     @NotEmpty(message = "This field can't be empty!")
     String title;
@@ -30,6 +30,6 @@ public class Note {
 
     String fileUrl;
 
-    Long note_owner_id;
+    String note_owner_id;
 
 }

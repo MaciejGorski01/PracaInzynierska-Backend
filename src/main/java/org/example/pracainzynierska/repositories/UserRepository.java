@@ -26,7 +26,7 @@ public class UserRepository {
         return jdbcTemplate.query(sql, new UserMapper());
     }
 
-    public User findById(Long id){
+    public User findById(String id){
         String sql = "SELECT u FROM User u WHERE u.id = ?";
         return jdbcTemplate.queryForObject(sql, new UserMapper(), id);
     }
@@ -41,12 +41,12 @@ public class UserRepository {
         return jdbcTemplate.queryForObject(sql, new UserMapper(), email);
     }
 
-    public void update(String password, String email, String name, String surname, Long id){
+    public void update(String password, String email, String name, String surname, String id){
         String sql = "UPDATE User u SET u.name = :name, u.surname = :surname, u.password = :password WHERE u.id = :id";
         jdbcTemplate.update(sql, password, email, name, surname, id);
     }
 
-    public void delete(Long id){
+    public void delete(String id){
         String sql = "DELETE FROM User u WHERE u.id = :id";
         jdbcTemplate.update(sql, id);
     }

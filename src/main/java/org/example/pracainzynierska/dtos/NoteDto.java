@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public record NoteDto(
-        Long id,
+        String id,
 
         @NotEmpty(message = "This field can't be empty!")
         String title,

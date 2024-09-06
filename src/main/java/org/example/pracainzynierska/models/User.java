@@ -14,7 +14,7 @@ import java.util.List;
 @Setter
 public class User {
 
-    Long id;
+    String id;
 
     @NotEmpty(message = "This field can't be empty!")
     @Size( min = 7, message = "Password must be at least 8 characters long!")

@@ -8,7 +8,7 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public record UserDto(
-        Long id,
+        String id,
 
         @NotEmpty(message = "This field can't be empty!")
         @Size( min = 7, message = "Password must be at least 8 characters long!")
