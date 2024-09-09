@@ -20,6 +20,11 @@ public class NoteService {
         return notes.stream().map(this::mapToNoteDto).toList();
     }
 
+    public List<NoteDto> findAllNotes(){
+        List<Note> notes = noteRepository.findAllNotes();
+        return notes.stream().map(this::mapToNoteDto).toList();
+    }
+
     public NoteDto findNoteById(String id){
         Note note = noteRepository.findById(id);
         return mapToNoteDto(note);
