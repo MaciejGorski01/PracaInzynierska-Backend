@@ -1,9 +1,8 @@
 package org.example.pracainzynierska.mappers;
 
-import org.example.pracainzynierska.models.Note;
-
 import org.example.pracainzynierska.models.User;
 import org.springframework.jdbc.core.RowMapper;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
