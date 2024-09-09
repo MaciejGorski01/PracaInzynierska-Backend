@@ -17,12 +17,17 @@ public class NoteRepository {
     }
 
     public List<Note> findAllUserNotes(String userid){
-        String sql = "SELECT * from \"Note\" WHERE note_owner_id = ?";
+        String sql = "SELECT * from \"Note\" WHERE \"note_owner_id\" = ?";
         return jdbcTemplate.query(sql, new NoteMapper(), userid);
     }
 
+    public List<Note> findAllNotes(){
+        String sql = "SELECT * FROM \"Note\"";
+        return jdbcTemplate.query(sql, new NoteMapper());
+    }
+
     public Note findById(String id){
-        String sql = "SELECT * from \"Note\" WHERE id = ?";
+        String sql = "SELECT * FROM \"Note\" WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, new NoteMapper(), id);
     }
 
