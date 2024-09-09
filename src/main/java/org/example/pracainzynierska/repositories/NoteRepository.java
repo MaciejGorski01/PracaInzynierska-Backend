@@ -32,12 +32,13 @@ public class NoteRepository {
     }
 
     public void delete(String id){
-        String sql = "DELETE FROM \"Note\" WHERE id = :id";
+        String sql = "DELETE FROM \"Note\" WHERE id = ?";
         jdbcTemplate.update(sql, id);
     }
 
     public void update(String title, String tag, Boolean favourite, String content, String imageUrl, String fileUrl, String id){
-        String sql = "UPDATE \"Note\" SET title = ? tag = ?, favourite = ?, content = ?, imageUrl = ?, fileUrl = ? WHERE id = ?";
+        String sql = "UPDATE \"Note\" SET title = ?, tag = ?, favourite = ?, content = ?, \"imageUrl\" = ?, \"fileUrl\" = ? WHERE id = ?";
         jdbcTemplate.update(sql, title, tag, favourite, content, imageUrl, fileUrl, id);
     }
+
 }
