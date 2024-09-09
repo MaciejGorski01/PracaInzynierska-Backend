@@ -33,8 +33,8 @@ public class NoteService {
         noteRepository.delete(id);
     }
 
-    public void updateNote(Note note){
-        noteRepository.update(note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getImageUrl(), note.getFileUrl(), note.getId());
+    public void updateNote(NoteDto note){
+        noteRepository.update(note.title(), note.tag(), note.favourite(), note.content(), note.imageUrl(), note.fileUrl(), note.id());
     }
 
     public NoteDto mapToNoteDto(Note note){
