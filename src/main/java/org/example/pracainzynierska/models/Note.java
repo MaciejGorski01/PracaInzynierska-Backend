@@ -31,4 +31,7 @@ public class Note {
 
     String note_owner_id;
 
+    //dodać opcję archiwizacji notatek
+    //zmienić imageUrl na color
+
 }
