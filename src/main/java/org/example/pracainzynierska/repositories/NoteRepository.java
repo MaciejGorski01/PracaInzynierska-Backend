@@ -32,7 +32,7 @@ public class NoteRepository {
     }
 
     public void create(String id, String title, String tag, Boolean favourite, String content, String color, String fileUrl, String noteOwnerId) {
-        String sql = "INSERT INTO \"Note\" (id, title, tag, favourite, content, \"imageUrl\", \"color\", \"note_owner_id\") VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        String sql = "INSERT INTO \"Note\" (id, title, tag, favourite, content, \"color\", \"fileUrl\", \"note_owner_id\") VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
         jdbcTemplate.update(sql, id, title, tag, favourite, content, color, fileUrl, noteOwnerId);
     }
 

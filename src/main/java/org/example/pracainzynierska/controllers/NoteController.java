@@ -97,8 +97,7 @@ public class NoteController {
                 NoteDto note = noteService.findNoteById(id);
 
             } catch (Exception e){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(Map.of("error", "Note not found"));
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Note not found"));
             }
 
             noteService.deleteNote(id);
