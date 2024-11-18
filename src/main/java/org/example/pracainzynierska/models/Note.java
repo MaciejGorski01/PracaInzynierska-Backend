@@ -25,13 +25,11 @@ public class Note {
     @NotEmpty(message = "This field can't be empty!")
     String content;
 
-    String imageUrl;
+    @NotEmpty(message = "This field can't be empty!")
+    String color;
 
     String fileUrl;
 
     String note_owner_id;
-
-    //dodać opcję archiwizacji notatek
-    //zmienić imageUrl na color
 
 }

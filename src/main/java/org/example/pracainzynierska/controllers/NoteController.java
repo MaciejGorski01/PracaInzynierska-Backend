@@ -77,7 +77,7 @@ public class NoteController {
                     noteDto.tag() != null ? noteDto.tag() : existingNoteDto.tag(),
                     noteDto.favourite() != null ? noteDto.favourite() : existingNoteDto.favourite(),
                     noteDto.content() != null ? noteDto.content() : existingNoteDto.content(),
-                    noteDto.imageUrl() != null ? noteDto.imageUrl() : existingNoteDto.imageUrl(),
+                    noteDto.color() != null ? noteDto.color() : existingNoteDto.color(),
                     noteDto.fileUrl() != null ? noteDto.fileUrl() : existingNoteDto.fileUrl()
             );
 

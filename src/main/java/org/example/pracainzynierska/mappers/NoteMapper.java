@@ -14,7 +14,7 @@ public class NoteMapper implements RowMapper<Note> {
         note.setTag(rs.getString("tag"));
         note.setFavourite(rs.getBoolean("favourite"));
         note.setContent(rs.getString("content"));
-        note.setImageUrl(rs.getString("imageUrl"));
+        note.setColor(rs.getString("color"));
         note.setFileUrl(rs.getString("fileUrl"));
         note.setNote_owner_id(rs.getString("note_owner_id"));
         return note;

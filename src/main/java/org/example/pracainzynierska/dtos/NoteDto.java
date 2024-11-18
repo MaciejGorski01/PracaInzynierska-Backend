@@ -19,7 +19,7 @@ public record NoteDto(
         @NotEmpty(message = "This field can't be empty!")
         String content,
 
-        String imageUrl,
+        String color,
 
         String fileUrl
 ) { }

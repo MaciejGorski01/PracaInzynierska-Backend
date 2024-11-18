@@ -31,7 +31,7 @@ public class NoteService {
     }
 
     public void addNote(Note note) {
-        noteRepository.create(UUID.randomUUID().toString(), note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getImageUrl(), note.getFileUrl(), note.getNote_owner_id());
+        noteRepository.create(UUID.randomUUID().toString(), note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getColor(), note.getFileUrl(), note.getNote_owner_id());
     }
 
     public void deleteNote(String id){
@@ -39,11 +39,11 @@ public class NoteService {
     }
 
     public void updateNote(NoteDto note){
-        noteRepository.update(note.title(), note.tag(), note.favourite(), note.content(), note.imageUrl(), note.fileUrl(), note.id());
+        noteRepository.update(note.title(), note.tag(), note.favourite(), note.content(), note.color(), note.fileUrl(), note.id());
     }
 
     public NoteDto mapToNoteDto(Note note){
-        NoteDto noteDto = new NoteDto(note.getId(), note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getImageUrl(), note.getFileUrl());
+        NoteDto noteDto = new NoteDto(note.getId(), note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getColor(), note.getFileUrl());
         return noteDto;
     }
 }

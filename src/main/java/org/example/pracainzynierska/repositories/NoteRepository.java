@@ -31,9 +31,9 @@ public class NoteRepository {
         return jdbcTemplate.queryForObject(sql, new NoteMapper(), id);
     }
 
-    public void create(String id, String title, String tag, Boolean favourite, String content, String imageUrl, String fileUrl, String noteOwnerId) {
-        String sql = "INSERT INTO \"Note\" (id, title, tag, favourite, content, \"imageUrl\", \"fileUrl\", \"note_owner_id\") VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-        jdbcTemplate.update(sql, id, title, tag, favourite, content, imageUrl, fileUrl, noteOwnerId);
+    public void create(String id, String title, String tag, Boolean favourite, String content, String color, String fileUrl, String noteOwnerId) {
+        String sql = "INSERT INTO \"Note\" (id, title, tag, favourite, content, \"imageUrl\", \"color\", \"note_owner_id\") VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
+        jdbcTemplate.update(sql, id, title, tag, favourite, content, color, fileUrl, noteOwnerId);
     }
 
     public void delete(String id){
@@ -41,9 +41,9 @@ public class NoteRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    public void update(String title, String tag, Boolean favourite, String content, String imageUrl, String fileUrl, String id){
-        String sql = "UPDATE \"Note\" SET title = ?, tag = ?, favourite = ?, content = ?, \"imageUrl\" = ?, \"fileUrl\" = ? WHERE id = ?";
-        jdbcTemplate.update(sql, title, tag, favourite, content, imageUrl, fileUrl, id);
+    public void update(String title, String tag, Boolean favourite, String content, String color, String fileUrl, String id){
+        String sql = "UPDATE \"Note\" SET title = ?, tag = ?, favourite = ?, content = ?, \"color\" = ?, \"fileUrl\" = ? WHERE id = ?";
+        jdbcTemplate.update(sql, title, tag, favourite, content, color, fileUrl, id);
     }
 
 }
