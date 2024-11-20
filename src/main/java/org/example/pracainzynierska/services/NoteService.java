@@ -26,7 +26,7 @@ public class NoteService {
     }
 
     public NoteDto findNoteById(String id){
-        Note note = noteRepository.findById(id);
+        Note note = noteRepository.findById(id).getFirst();
         return mapToNoteDto(note);
     }
 

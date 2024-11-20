@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Note",
+  "description": "Notes",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "The unique identifier for a product",
+      "type": "String"
+    },
+    "title": {
+      "description": "Title of a note",
+      "type": "String"
+    },
+    "tag": {
+      "type": "String",
+      "description": "Tag of a note"
+    },
+    "favourite": {
+      "description": "Is note favourite",
+      "type": "boolean"
+    },
+    "content": {
+      "description": "Content of a note",
+      "type": "String"
+    },
+    "color": {
+      "description": "Color of a note",
+      "type": "String"
+    },
+    "fileUrl": {
+      "description": "Url of a file attached to the note",
+      "type": "String"
+    },
+    "note_owner_id": {
+      "description": "Note's owner ID",
+      "type": "String"
+    }
+  },
+  "required": ["id", "title", "tag", "content", "color"]
+}

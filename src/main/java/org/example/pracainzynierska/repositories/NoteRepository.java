@@ -17,17 +17,17 @@ public class NoteRepository {
     }
 
     public List<Note> findAllUserNotes(String userid){
-        String sql = "SELECT * from \"Note\" WHERE \"note_owner_id\" = ?";
-        return jdbcTemplate.query(sql, new NoteMapper(), userid);
+        String sql = "SELECT json_agg(row_to_json(\"Note\")) AS notes_json FROM \"Note\" WHERE \"note_owner_id\" = ?";
+        return jdbcTemplate.queryForObject(sql, new NoteMapper(), userid);
     }
 
     public List<Note> findAllNotes(){
-        String sql = "SELECT * FROM \"Note\"";
-        return jdbcTemplate.query(sql, new NoteMapper());
+        String sql = "SELECT json_agg(row_to_json(\"Note\")) AS notes_json FROM \"Note\";";
+        return jdbcTemplate.queryForObject(sql, new NoteMapper());
     }
 
-    public Note findById(String id){
-        String sql = "SELECT * FROM \"Note\" WHERE id = ?";
+    public List<Note> findById(String id){
+        String sql = "SELECT json_agg(row_to_json(\"Note\")) AS notes_json FROM \"Note\" WHERE id = ?";
         return jdbcTemplate.queryForObject(sql, new NoteMapper(), id);
     }
 
