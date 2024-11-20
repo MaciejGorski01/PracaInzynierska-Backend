@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 @Controller
 @RequestMapping("/sharednotes")
@@ -23,12 +22,13 @@ public class SharedNoteController {
     @GetMapping("/{email}")
     public ResponseEntity<List<SharedNoteWithDetailsDto>> getAllUserSharedNotes(@PathVariable String email){
         List<SharedNoteWithDetailsDto> userSharedNotes = sharedNoteService.findAllUserSharedNote(email);
+        List<SharedNoteWithDetailsDto> userSharedNotesImmutable = List.of(userSharedNotes.toArray(new SharedNoteWithDetailsDto[]{}));
 
-        if (userSharedNotes.isEmpty()){
+        if (userSharedNotesImmutable.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(userSharedNotes);
+        return ResponseEntity.ok(userSharedNotesImmutable);
     }
 
     @PostMapping

@@ -24,23 +24,25 @@ public class NoteController {
     @GetMapping("/user/{userid}")
     public ResponseEntity<List<NoteDto>> getAllUserNotes(@PathVariable String userid){
         List<NoteDto> userNotes = noteService.findAllUserNotes(userid);
+        List<NoteDto> userNotesImmutable = List.of(userNotes.toArray(new NoteDto[]{}));
 
-        if (userNotes.isEmpty()){
+        if (userNotesImmutable.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(userNotes);
+        return ResponseEntity.ok(userNotesImmutable);
     }
 
     @GetMapping
     public ResponseEntity<List<NoteDto>> getAllNotes(){
         List<NoteDto> allNotes = noteService.findAllNotes();
+        List<NoteDto> allNotesImmutable = List.of(allNotes.toArray(new NoteDto[]{}));
 
-        if (allNotes.isEmpty()){
+        if (allNotesImmutable.isEmpty()){
             return ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.ok(allNotes);
+        return ResponseEntity.ok(allNotesImmutable);
     }
 
 
