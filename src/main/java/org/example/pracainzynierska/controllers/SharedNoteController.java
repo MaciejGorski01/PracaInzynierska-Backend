@@ -1,5 +1,6 @@
 package org.example.pracainzynierska.controllers;
 
+import org.example.pracainzynierska.dtos.NoteDto;
 import org.example.pracainzynierska.dtos.SharedNoteDto;
 import org.example.pracainzynierska.dtos.SharedNoteWithDetailsDto;
 import org.example.pracainzynierska.models.SharedNote;
@@ -30,6 +31,32 @@ public class SharedNoteController {
 
         return ResponseEntity.ok(userSharedNotesImmutable);
     }
+
+
+    @GetMapping("/id/{id}")
+    public ResponseEntity<SharedNoteDto> getSharedNoteById(@PathVariable String id){
+        try {
+            SharedNoteDto sharedNote = sharedNoteService.findSharedNote(id);
+            return ResponseEntity.ok(sharedNote);
+
+        } catch (Exception e ){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @GetMapping("/{email}/{id}")
+    public ResponseEntity<SharedNoteWithDetailsDto> getUserSharedNoteWithDetails(@PathVariable String email, @PathVariable String id){
+        try {
+            SharedNoteWithDetailsDto sharedNoteWD = sharedNoteService.findUserSharedNoteWithDetails(email, id);
+            return ResponseEntity.ok(sharedNoteWD);
+
+        } catch (Exception e ){
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 
     @PostMapping
     public ResponseEntity<?> shareNote(@RequestBody SharedNote sharedNote){

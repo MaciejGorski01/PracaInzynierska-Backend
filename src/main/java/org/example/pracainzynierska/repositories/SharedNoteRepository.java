@@ -16,16 +16,46 @@ public class SharedNoteRepository {
 
     public SharedNoteRepository(JdbcTemplate jdbcTemplate) { this.jdbcTemplate = jdbcTemplate; }
 
-    public SharedNote findSharedNote(String id){
-        String sql = "SELECT * from \"SharedNote\" WHERE id = ?;";
+    public List<SharedNote> findSharedNote(String id){
+        String sql = "SELECT json_agg(row_to_json(\"SharedNote\")) AS sharedNotes_json FROM \"SharedNote\" WHERE id = ?;";
         return jdbcTemplate.queryForObject(sql, new SharedNoteMapper(), id);
     }
 
     public List<SharedNoteWithDetailsDto> findAllUserSharedNote(String email){
-        String sql = "SELECT sn.note_id, sn.shared_with_user_email, n.title, n.tag, n.favourite, n.content, n.color, n.\"fileUrl\", n.note_owner_id from \"SharedNote\" AS sn " +
-                "JOIN \"Note\" AS n ON sn.note_id = n.id " +
+        String sql = "SELECT json_agg(json_build_object( " +
+                "'note_id', sn.note_id, " +
+                "'shared_with_user_email', sn.shared_with_user_email, " +
+                "'title', n.title, " +
+                "'tag', n.tag, " +
+                "'favourite', n.favourite, " +
+                "'content', n.content, " +
+                "'color', n.color, " +
+                "'fileUrl', n.\"fileUrl\", " +
+                "'note_owner_id', n.note_owner_id" +
+                ")) AS sharedNotesWithDetails_json " +
+                "FROM \"SharedNote\" sn " +
+                "JOIN \"Note\" n ON sn.note_id = n.id " +
                 "WHERE sn.shared_with_user_email LIKE ?";
-        return jdbcTemplate.query(sql, new SharedNoteWithDetailsMapper(), email);
+        return jdbcTemplate.queryForObject(sql, new SharedNoteWithDetailsMapper(), email);
+    }
+
+    public List<SharedNoteWithDetailsDto> findUserSharedNoteWithDetails(String email, String id){
+        String sql = "SELECT json_agg(json_build_object( " +
+                "'note_id', sn.note_id, " +
+                "'shared_with_user_email', sn.shared_with_user_email, " +
+                "'title', n.title, " +
+                "'tag', n.tag, " +
+                "'favourite', n.favourite, " +
+                "'content', n.content, " +
+                "'color', n.color, " +
+                "'fileUrl', n.\"fileUrl\", " +
+                "'note_owner_id', n.note_owner_id" +
+                ")) AS sharedNotesWithDetails_json " +
+                "FROM \"SharedNote\" sn " +
+                "JOIN \"Note\" n ON sn.note_id = n.id " +
+                "WHERE sn.shared_with_user_email LIKE ? AND " +
+                "sn.note_id = ?";
+        return jdbcTemplate.queryForObject(sql, new SharedNoteWithDetailsMapper(), email, id);
     }
 
     public void create(String id, String note_id, String email){

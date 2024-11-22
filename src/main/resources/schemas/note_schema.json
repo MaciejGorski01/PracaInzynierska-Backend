@@ -14,7 +14,9 @@
     },
     "tag": {
       "type": "String",
-      "description": "Tag of a note"
+      "description": "Tag of a note",
+      "minLength": 2,
+      "maxLength": 11
     },
     "favourite": {
       "description": "Is note favourite",

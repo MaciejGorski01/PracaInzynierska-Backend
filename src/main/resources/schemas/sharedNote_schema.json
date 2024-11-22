@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SharedNote",
+  "description": "SharedNote",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "The unique identifier for a product",
+      "type": "String"
+    },
+    "note_id": {
+      "description": "Id of a note",
+      "type": "String"
+    },
+    "shared_with_user_email": {
+      "description": "User's email, the note is shared with",
+      "type": "String"
+    }
+  },
+  "required": ["id", "note_id", "shared_with_user_email"]
+}

@@ -24,7 +24,7 @@ public class SharedNoteService {
 
 
     public SharedNoteDto findSharedNote(String id){
-        SharedNote sharedNote = sharedNoteRepository.findSharedNote(id);
+        SharedNote sharedNote = sharedNoteRepository.findSharedNote(id).getFirst();
         return mapToSharedNoteDto(sharedNote);
     }
 
@@ -33,6 +33,11 @@ public class SharedNoteService {
         List<SharedNoteWithDetailsDto> sharedNotes = sharedNoteRepository.findAllUserSharedNote(email);
 
         return sharedNotes.stream().toList();
+    }
+
+    public SharedNoteWithDetailsDto findUserSharedNoteWithDetails(String email, String id){
+        SharedNoteWithDetailsDto sharedNoteWD = sharedNoteRepository.findUserSharedNoteWithDetails(email, id).getFirst();
+        return sharedNoteWD;
     }
 
     public void shareNote(SharedNote sharedNote){

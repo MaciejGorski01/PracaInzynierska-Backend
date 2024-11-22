@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SharedNote",
+  "description": "SharedNote",
+  "type": "object",
+  "properties": {
+    "note_id": {
+      "description": "The unique identifier for a product",
+      "type": "String"
+    },
+    "shared_with_user_email": {
+      "description": "User's email, the note is shared with",
+      "type": "String"
+    },
+    "title": {
+      "description": "Title of shared note",
+      "type": "String"
+    },
+    "tag": {
+      "description": "Tag of shared note",
+      "type": "String",
+      "minLength": 2,
+      "maxLength": 11
+    },
+    "favourite": {
+      "description": "Is shared note favourite",
+      "type": "Boolean"
+    },
+    "content": {
+      "description": "Content of shared note",
+      "type": "String"
+    },
+    "color": {
+      "description": "Color of shared note",
+      "type": "String"
+    },
+    "fileUrl": {
+      "description": "Path of file attached to shared note",
+      "type": "String"
+    }
+  },
+  "required": ["note_id", "shared_with_user_email", "title", "tag", "content"]
+}
