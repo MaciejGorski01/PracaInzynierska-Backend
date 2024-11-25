@@ -1,8 +1,10 @@
 package org.example.pracainzynierska.controllers;
 
 import org.example.pracainzynierska.dtos.NoteDto;
+import org.example.pracainzynierska.functions.JsonValidator;
 import org.example.pracainzynierska.models.Note;
 import org.example.pracainzynierska.services.NoteService;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -16,6 +18,7 @@ import java.util.Map;
 public class NoteController {
 
     NoteService noteService;
+    JsonValidator jsonValidator = new JsonValidator("schemas/note_schema.json");
 
     public NoteController(NoteService noteService){
         this.noteService = noteService;
@@ -47,10 +50,14 @@ public class NoteController {
 
 
     @PostMapping
-    public ResponseEntity<?> createNote(@RequestBody Note note){
+    public ResponseEntity<?> createNote(@RequestBody String json){
         try{
-            noteService.addNote(note);
-            return ResponseEntity.status(HttpStatus.CREATED).body(note);
+            JSONObject jsonObject = new JSONObject(json);
+
+            jsonValidator.validator(jsonObject);
+
+            noteService.addNote(jsonObject);
+            return ResponseEntity.status(HttpStatus.CREATED).body(jsonObject.toMap());
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }
@@ -69,23 +76,35 @@ public class NoteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editNote(@PathVariable String id, @RequestBody NoteDto noteDto){
+    public ResponseEntity<?> editNote(@PathVariable String id, @RequestBody String json){
         try{
             NoteDto existingNoteDto = noteService.findNoteById(id);
+            JSONObject jsonObject = new JSONObject(json);
 
-            NoteDto updatedNoteDto = new NoteDto(
-                    id,
-                    noteDto.title() != null ? noteDto.title() : existingNoteDto.title(),
-                    noteDto.tag() != null ? noteDto.tag() : existingNoteDto.tag(),
-                    noteDto.favourite() != null ? noteDto.favourite() : existingNoteDto.favourite(),
-                    noteDto.content() != null ? noteDto.content() : existingNoteDto.content(),
-                    noteDto.color() != null ? noteDto.color() : existingNoteDto.color(),
-                    noteDto.fileUrl() != null ? noteDto.fileUrl() : existingNoteDto.fileUrl()
-            );
+//            NoteDto updatedNoteDto = new NoteDto(
+//                    id,
+//                    jsonObject.has("title") ? jsonObject.getString("title") : existingNoteDto.title(),
+//                    jsonObject.has("tag") ? jsonObject.getString("tag") : existingNoteDto.tag(),
+//                    jsonObject.has("favourite") ? jsonObject.getBoolean("favourite") : existingNoteDto.favourite(),
+//                    jsonObject.has("content") ? jsonObject.getString("content") : existingNoteDto.content(),
+//                    jsonObject.has("color") ? jsonObject.getString("color") : existingNoteDto.color(),
+//                    jsonObject.has("fileUrl") ? jsonObject.getString("fileUrl") : existingNoteDto.fileUrl()
+//            );
 
-            noteService.updateNote(updatedNoteDto);
+            JSONObject updatedNote = new JSONObject();
 
-            return ResponseEntity.ok(updatedNoteDto);
+            updatedNote.put("title", jsonObject.has("title") ? jsonObject.getString("title"): existingNoteDto.title());
+            updatedNote.put("tag", jsonObject.has("tag") ? jsonObject.getString("tag"): existingNoteDto.tag());
+            updatedNote.put("favourite", jsonObject.has("favourite") ? jsonObject.getBoolean("favourite"): existingNoteDto.favourite());
+            updatedNote.put("content", jsonObject.has("content") ? jsonObject.getString("content"): existingNoteDto.content());
+            updatedNote.put("color", jsonObject.has("color") ? jsonObject.getString("color"): existingNoteDto.color());
+            updatedNote.put("fileUrl", jsonObject.has("fileUrl") ? jsonObject.getString("fileUrl"): existingNoteDto.fileUrl());
+
+            jsonValidator.validator(updatedNote);
+
+            noteService.updateNote(updatedNote, id);
+
+            return ResponseEntity.ok(updatedNote.toMap());
 
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));

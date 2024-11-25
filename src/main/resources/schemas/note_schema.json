@@ -1,19 +1,19 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "Note",
   "description": "Notes",
   "type": "object",
   "properties": {
     "id": {
       "description": "The unique identifier for a product",
-      "type": "String"
+      "type": "string"
     },
     "title": {
       "description": "Title of a note",
-      "type": "String"
+      "type": "string"
     },
     "tag": {
-      "type": "String",
+      "type": "string",
       "description": "Tag of a note",
       "minLength": 2,
       "maxLength": 11
@@ -24,20 +24,21 @@
     },
     "content": {
       "description": "Content of a note",
-      "type": "String"
+      "type": "string"
     },
     "color": {
       "description": "Color of a note",
-      "type": "String"
+      "type": "string"
     },
     "fileUrl": {
       "description": "Url of a file attached to the note",
-      "type": "String"
+      "type": "string"
     },
     "note_owner_id": {
       "description": "Note's owner ID",
-      "type": "String"
+      "type": "string"
     }
   },
-  "required": ["id", "title", "tag", "content", "color"]
+  "required": ["title", "tag", "favourite", "content", "color", "fileUrl"],
+  "additionalProperties": false
 }

@@ -3,9 +3,11 @@ package org.example.pracainzynierska.services;
 import org.example.pracainzynierska.dtos.NoteDto;
 import org.example.pracainzynierska.models.Note;
 import org.example.pracainzynierska.repositories.NoteRepository;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class NoteService {
@@ -30,16 +32,16 @@ public class NoteService {
         return mapToNoteDto(note);
     }
 
-    public void addNote(Note note) {
-        noteRepository.create(UUID.randomUUID().toString(), note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getColor(), note.getFileUrl(), note.getNote_owner_id());
+    public void addNote(JSONObject jsonObject) {
+        noteRepository.create(UUID.randomUUID().toString(), jsonObject);
     }
 
     public void deleteNote(String id){
         noteRepository.delete(id);
     }
 
-    public void updateNote(NoteDto note){
-        noteRepository.update(note.title(), note.tag(), note.favourite(), note.content(), note.color(), note.fileUrl(), note.id());
+    public void updateNote(JSONObject jsonObject, String id){
+        noteRepository.update(jsonObject, id);
     }
 
     public NoteDto mapToNoteDto(Note note){

@@ -2,6 +2,7 @@ package org.example.pracainzynierska.repositories;
 
 import org.example.pracainzynierska.mappers.NoteMapper;
 import org.example.pracainzynierska.models.Note;
+import org.json.JSONObject;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -31,9 +32,11 @@ public class NoteRepository {
         return jdbcTemplate.queryForObject(sql, new NoteMapper(), id);
     }
 
-    public void create(String id, String title, String tag, Boolean favourite, String content, String color, String fileUrl, String noteOwnerId) {
-        String sql = "INSERT INTO \"Note\" (id, title, tag, favourite, content, \"color\", \"fileUrl\", \"note_owner_id\") VALUES (?, ?, ?, ?, ?, ?, ?, ?);";
-        jdbcTemplate.update(sql, id, title, tag, favourite, content, color, fileUrl, noteOwnerId);
+    public void create(String id, JSONObject jsonObject) {
+        String sql = "INSERT INTO \"Note\" (id, title, tag, favourite, content, color, \"fileUrl\", note_owner_id) " +
+                "SELECT ?, title, tag, favourite, content, color, \"fileUrl\", note_owner_id FROM json_to_record(?::json) " +
+                "AS temp(id text, title text, tag text, favourite boolean, content text, color text, \"fileUrl\" text, note_owner_id text)";
+        jdbcTemplate.update(sql, id, jsonObject.toString());
     }
 
     public void delete(String id){
@@ -41,9 +44,12 @@ public class NoteRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    public void update(String title, String tag, Boolean favourite, String content, String color, String fileUrl, String id){
-        String sql = "UPDATE \"Note\" SET title = ?, tag = ?, favourite = ?, content = ?, \"color\" = ?, \"fileUrl\" = ? WHERE id = ?";
-        jdbcTemplate.update(sql, title, tag, favourite, content, color, fileUrl, id);
+    public void update(JSONObject jsonObject, String id){
+        String sql = "UPDATE \"Note\" SET " +
+                "title = temp.title, tag = temp.tag, favourite = temp.favourite, content = temp.content, color = temp.color, \"fileUrl\" = temp.\"fileUrl\" \n " +
+                "FROM json_to_record(?::json) AS temp(title text, tag text, favourite boolean, content text, color text, \"fileUrl\" text) " +
+                "WHERE \"Note\".id = ?; ";
+        jdbcTemplate.update(sql, jsonObject.toString(), id);
     }
 
 }

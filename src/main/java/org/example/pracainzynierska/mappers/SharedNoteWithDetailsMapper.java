@@ -4,6 +4,7 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import org.example.pracainzynierska.dtos.SharedNoteWithDetailsDto;
+import org.example.pracainzynierska.functions.JsonValidator;
 import org.example.pracainzynierska.models.SharedNote;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -18,25 +19,26 @@ import java.util.List;
 
 public class SharedNoteWithDetailsMapper implements RowMapper<List<SharedNoteWithDetailsDto>> {
 
-    private final JsonSchema jsonSchema;
+//    private final JsonSchema jsonSchema;
+    JsonValidator jsonValidator = new JsonValidator("schemas/sharedNoteWithDetails_schema.json");
 
-    public SharedNoteWithDetailsMapper() {
-        try {
-            InputStream schemaStream = getClass().getClassLoader().getResourceAsStream("schemas/sharedNoteWithDetails_schema.json");
-            if (schemaStream == null) {
-                throw new IllegalStateException("Brak schematu: schemas/sharedNoteWithDetails_schema.json");
-            }
-
-            String schemaString = new String(schemaStream.readAllBytes(), StandardCharsets.UTF_8);
-
-            JSONObject rawSchema = new JSONObject(schemaString);
-            JsonSchemaFactory schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-            this.jsonSchema = schemaFactory.getSchema(rawSchema.toString());
-
-        } catch (Exception e) {
-            throw new RuntimeException("Błąd podczas ładowania JSON Schema", e);
-        }
-    }
+//    public SharedNoteWithDetailsMapper() {
+//        try {
+//            InputStream schemaStream = getClass().getClassLoader().getResourceAsStream("schemas/sharedNoteWithDetails_schema.json");
+//            if (schemaStream == null) {
+//                throw new IllegalStateException("Brak schematu: schemas/sharedNoteWithDetails_schema.json");
+//            }
+//
+//            String schemaString = new String(schemaStream.readAllBytes(), StandardCharsets.UTF_8);
+//
+//            JSONObject rawSchema = new JSONObject(schemaString);
+//            JsonSchemaFactory schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
+//            this.jsonSchema = schemaFactory.getSchema(rawSchema.toString());
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException("Błąd podczas ładowania JSON Schema", e);
+//        }
+//    }
 
 
     public List<SharedNoteWithDetailsDto> mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -48,6 +50,7 @@ public class SharedNoteWithDetailsMapper implements RowMapper<List<SharedNoteWit
 
         for (int i=0; i<jsonArray.length(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
+            jsonValidator.validator(jsonObject);
 
             String noteId = jsonObject.optString("note_id");
             String sharedWithUserEmail = jsonObject.optString("shared_with_user_email");
