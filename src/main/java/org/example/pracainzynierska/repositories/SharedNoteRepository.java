@@ -4,6 +4,7 @@ import org.example.pracainzynierska.dtos.SharedNoteWithDetailsDto;
 import org.example.pracainzynierska.mappers.SharedNoteMapper;
 import org.example.pracainzynierska.mappers.SharedNoteWithDetailsMapper;
 import org.example.pracainzynierska.models.SharedNote;
+import org.json.JSONObject;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -58,9 +59,11 @@ public class SharedNoteRepository {
         return jdbcTemplate.queryForObject(sql, new SharedNoteWithDetailsMapper(), email, id);
     }
 
-    public void create(String id, String note_id, String email){
-        String sql = "INSERT INTO \"SharedNote\" (id, note_id, shared_with_user_email) VALUES (?, ?, ?);";
-        jdbcTemplate.update(sql, id, note_id, email);
+    public void create(String id, JSONObject jsonObject){
+        String sql = "INSERT INTO \"SharedNote\" (id, note_id, shared_with_user_email) " +
+                "SELECT ?, note_id, shared_with_user_email " +
+                "FROM json_to_record(?::json) AS temp(id text, note_id text, shared_with_user_email text)";
+        jdbcTemplate.update(sql, id, jsonObject.toString());
     }
 
     public void delete(String id){

@@ -2,7 +2,6 @@ package org.example.pracainzynierska.controllers;
 
 import org.example.pracainzynierska.dtos.NoteDto;
 import org.example.pracainzynierska.functions.JsonValidator;
-import org.example.pracainzynierska.models.Note;
 import org.example.pracainzynierska.services.NoteService;
 import org.json.JSONObject;
 import org.springframework.http.HttpStatus;

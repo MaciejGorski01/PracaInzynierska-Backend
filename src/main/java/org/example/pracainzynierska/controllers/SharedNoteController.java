@@ -1,10 +1,10 @@
 package org.example.pracainzynierska.controllers;
 
-import org.example.pracainzynierska.dtos.NoteDto;
 import org.example.pracainzynierska.dtos.SharedNoteDto;
 import org.example.pracainzynierska.dtos.SharedNoteWithDetailsDto;
-import org.example.pracainzynierska.models.SharedNote;
+import org.example.pracainzynierska.functions.JsonValidator;
 import org.example.pracainzynierska.services.SharedNoteService;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -17,6 +17,7 @@ import java.util.Map;
 @RequestMapping("/sharednotes")
 public class SharedNoteController {
     SharedNoteService sharedNoteService;
+    JsonValidator jsonValidator = new JsonValidator("schemas/sharedNote_schema.json");
 
     public SharedNoteController(SharedNoteService sharedNoteService) { this.sharedNoteService = sharedNoteService; }
 
@@ -59,10 +60,14 @@ public class SharedNoteController {
 
 
     @PostMapping
-    public ResponseEntity<?> shareNote(@RequestBody SharedNote sharedNote){
+    public ResponseEntity<?> shareNote(@RequestBody String json){
         try{
-            sharedNoteService.shareNote(sharedNote);
-            return ResponseEntity.status(HttpStatus.CREATED).body(sharedNote);
+            JSONObject jsonObject = new JSONObject(json);
+            jsonValidator.validator(jsonObject);
+
+            sharedNoteService.shareNote(jsonObject);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(jsonObject.toMap());
         } catch (Exception e){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
         }

@@ -17,5 +17,6 @@
       "type": "string"
     }
   },
-  "required": ["id", "note_id", "shared_with_user_email"]
+  "required": ["note_id", "shared_with_user_email"],
+  "additionalProperties": false
 }

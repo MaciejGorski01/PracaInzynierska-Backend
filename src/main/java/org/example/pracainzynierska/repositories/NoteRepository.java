@@ -34,8 +34,8 @@ public class NoteRepository {
 
     public void create(String id, JSONObject jsonObject) {
         String sql = "INSERT INTO \"Note\" (id, title, tag, favourite, content, color, \"fileUrl\", note_owner_id) " +
-                "SELECT ?, title, tag, favourite, content, color, \"fileUrl\", note_owner_id FROM json_to_record(?::json) " +
-                "AS temp(id text, title text, tag text, favourite boolean, content text, color text, \"fileUrl\" text, note_owner_id text)";
+                "SELECT ?, title, tag, favourite, content, color, \"fileUrl\", note_owner_id " +
+                "FROM json_to_record(?::json) AS temp(id text, title text, tag text, favourite boolean, content text, color text, \"fileUrl\" text, note_owner_id text)";
         jdbcTemplate.update(sql, id, jsonObject.toString());
     }
 
@@ -45,8 +45,8 @@ public class NoteRepository {
     }
 
     public void update(JSONObject jsonObject, String id){
-        String sql = "UPDATE \"Note\" SET " +
-                "title = temp.title, tag = temp.tag, favourite = temp.favourite, content = temp.content, color = temp.color, \"fileUrl\" = temp.\"fileUrl\" \n " +
+        String sql = "UPDATE \"Note\" " +
+                "SET title = temp.title, tag = temp.tag, favourite = temp.favourite, content = temp.content, color = temp.color, \"fileUrl\" = temp.\"fileUrl\" \n " +
                 "FROM json_to_record(?::json) AS temp(title text, tag text, favourite boolean, content text, color text, \"fileUrl\" text) " +
                 "WHERE \"Note\".id = ?; ";
         jdbcTemplate.update(sql, jsonObject.toString(), id);

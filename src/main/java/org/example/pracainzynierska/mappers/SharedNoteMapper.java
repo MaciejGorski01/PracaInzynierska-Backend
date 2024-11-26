@@ -1,17 +1,11 @@
 package org.example.pracainzynierska.mappers;
 
-import com.networknt.schema.JsonSchema;
-import com.networknt.schema.JsonSchemaFactory;
-import com.networknt.schema.SpecVersion;
 import org.example.pracainzynierska.functions.JsonValidator;
-import org.example.pracainzynierska.models.Note;
 import org.example.pracainzynierska.models.SharedNote;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.jdbc.core.RowMapper;
 
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;

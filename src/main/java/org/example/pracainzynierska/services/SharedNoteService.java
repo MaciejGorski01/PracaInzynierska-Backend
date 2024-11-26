@@ -2,11 +2,11 @@ package org.example.pracainzynierska.services;
 
 import org.example.pracainzynierska.dtos.SharedNoteDto;
 import org.example.pracainzynierska.dtos.SharedNoteWithDetailsDto;
-import org.example.pracainzynierska.models.Note;
 import org.example.pracainzynierska.models.SharedNote;
-import org.example.pracainzynierska.repositories.SharedNoteRepository;
-import org.springframework.stereotype.Service;
 import org.example.pracainzynierska.repositories.NoteRepository;
+import org.example.pracainzynierska.repositories.SharedNoteRepository;
+import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
@@ -40,8 +40,8 @@ public class SharedNoteService {
         return sharedNoteWD;
     }
 
-    public void shareNote(SharedNote sharedNote){
-        sharedNoteRepository.create(UUID.randomUUID().toString(), sharedNote.getNote_id(), sharedNote.getShared_with_user_email());
+    public void shareNote(JSONObject jsonObject){
+        sharedNoteRepository.create(UUID.randomUUID().toString(), jsonObject);
     }
 
     public void deleteSharedNote(String id){
