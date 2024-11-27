@@ -3,10 +3,12 @@ package org.example.pracainzynierska.services;
 import org.example.pracainzynierska.dtos.UserDto;
 import org.example.pracainzynierska.models.User;
 import org.example.pracainzynierska.repositories.UserRepository;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {
@@ -22,21 +24,17 @@ public class UserService {
     }
 
     public UserDto findUserById(String id){
-        User user = userRepository.findById(id);
+        User user = userRepository.findById(id).getFirst();
         return mapToUserDto(user);
     }
 
     public UserDto findUserByEmail(String email){
-        User user = userRepository.findUserByEmail(email);
-        if (user != null) {
-            return mapToUserDto(user);
-        } else {
-            throw new RuntimeException("User not found!");
-        }
+        User user = userRepository.findUserByEmail(email).getFirst();
+        return mapToUserDto(user);
     }
 
-    public void addUser(User user){
-        userRepository.create(user.getPassword(), user.getEmail(), user.getName(), user.getSurname());
+    public void addUser(JSONObject jsonObject){
+        userRepository.create(UUID.randomUUID().toString(), jsonObject);
     }
 
     public void deleteUser(String id){
@@ -44,8 +42,8 @@ public class UserService {
         userRepository.delete(id);
     }
 
-    public void updateUser(User user){
-        userRepository.update(user.getPassword(), user.getEmail(), user.getName(), user.getSurname(), user.getId());
+    public void updateUser(JSONObject jsonObject, String id){
+        userRepository.update(jsonObject, id);
     }
 
     public UserDto mapToUserDto(User user){

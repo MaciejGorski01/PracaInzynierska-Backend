@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "User",
+  "description": "Users",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "The unique identifier for a product",
+      "type": "string"
+    },
+    "password": {
+      "type": "string",
+      "description": "User's password",
+      "minLength": 7
+    },
+    "email": {
+      "description": "User's email",
+      "type": "string"
+    },
+    "name": {
+      "description": "User's first name",
+      "type": "string"
+    },
+    "surname": {
+      "description": "User's Surname",
+      "type": "string"
+    }
+  },
+  "required": ["password", "email", "name", "surname"],
+  "additionalProperties": false
+}
