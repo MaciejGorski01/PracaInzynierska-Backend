@@ -1,10 +1,12 @@
 package org.example.pracainzynierska.controllers;
 
-import org.example.pracainzynierska.dtos.NoteDto;
 import org.example.pracainzynierska.dtos.UserDto;
 import org.example.pracainzynierska.functions.JsonValidator;
+import org.example.pracainzynierska.functions.PasswordEncodeSecurity;
+import org.example.pracainzynierska.functions.Security;
 import org.example.pracainzynierska.services.UserService;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,6 +21,9 @@ public class UserController {
 
     UserService userService;
     JsonValidator jsonValidator = new JsonValidator("schemas/user_schema.json");
+
+    @Autowired
+    private PasswordEncodeSecurity passwordEncodeSecurity;
 
     public UserController(UserService userService){
         this.userService = userService;
@@ -61,8 +66,20 @@ public class UserController {
     public ResponseEntity<?> addUser(@RequestBody String json){
         try{
             JSONObject jsonObject = new JSONObject(json);
-            jsonValidator.validator(jsonObject);
-            userService.addUser(jsonObject);
+
+            try {
+                if (userService.findUserByEmail(jsonObject.optString("email")) != null) {
+                    throw new Exception(
+                            "There is an account with that email adress:" + jsonObject.getString("email"));
+                }
+
+            } catch (Exception e) {
+
+                jsonObject.put("password", passwordEncodeSecurity.encoder().encode(jsonObject.getString("password")));
+
+                jsonValidator.validator(jsonObject);
+                userService.addUser(jsonObject);
+            }
 
             return ResponseEntity.status(HttpStatus.CREATED).body(jsonObject.toMap());
         } catch (Exception e){
@@ -79,7 +96,7 @@ public class UserController {
 
             JSONObject updatedUser = new JSONObject();
 
-            updatedUser.put("password", jsonObject.has("password") ? jsonObject.getString("password"): existingUserDto.password());
+            updatedUser.put("password", jsonObject.has("password") ? passwordEncodeSecurity.encoder().encode(jsonObject.getString("password")): existingUserDto.password());
             updatedUser.put("email", jsonObject.has("email") ? jsonObject.getString("email"): existingUserDto.email());
             updatedUser.put("name", jsonObject.has("name") ? jsonObject.getString("name"): existingUserDto.name());
             updatedUser.put("surname", jsonObject.has("surname") ? jsonObject.getString("surname"): existingUserDto.surname());
