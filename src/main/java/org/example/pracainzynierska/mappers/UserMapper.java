@@ -18,22 +18,24 @@ public class UserMapper implements RowMapper<List<User>> {
 
         String json = rs.getString("users_json");
         List<User> users = new ArrayList<>();
-        JSONArray jsonArray = new JSONArray(json);
 
-        for (int i=0; i< jsonArray.length(); i++) {
-            JSONObject jsonObject = jsonArray.getJSONObject(i);
-            jsonValidator.validator(jsonObject);
+        if (json != null) {
+            JSONArray jsonArray = new JSONArray(json);
 
-            User user = new User();
-            user.setId(jsonObject.optString("id"));
-            user.setPassword(jsonObject.optString("password"));
-            user.setEmail(jsonObject.optString("email"));
-            user.setName(jsonObject.optString("name"));
-            user.setSurname(jsonObject.optString("surname"));
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                jsonValidator.validator(jsonObject);
 
-            users.add(user);
+                User user = new User();
+                user.setId(jsonObject.optString("id"));
+                user.setPassword(jsonObject.optString("password"));
+                user.setEmail(jsonObject.optString("email"));
+                user.setName(jsonObject.optString("name"));
+                user.setSurname(jsonObject.optString("surname"));
+
+                users.add(user);
+            }
         }
-
         return users;
 
     }

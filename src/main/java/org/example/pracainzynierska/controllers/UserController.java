@@ -1,12 +1,15 @@
 package org.example.pracainzynierska.controllers;
 
 import org.example.pracainzynierska.dtos.UserDto;
+import org.example.pracainzynierska.exceptions.EntityNotFoundException;
+import org.example.pracainzynierska.exceptions.UserAlreadyExistsException;
 import org.example.pracainzynierska.functions.JsonValidator;
 import org.example.pracainzynierska.functions.PasswordEncodeSecurity;
 import org.example.pracainzynierska.functions.Security;
 import org.example.pracainzynierska.services.UserService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @Controller
 @RequestMapping("/users")
@@ -25,108 +29,106 @@ public class UserController {
     @Autowired
     private PasswordEncodeSecurity passwordEncodeSecurity;
 
-    public UserController(UserService userService){
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
 
     @GetMapping
-    public ResponseEntity<List<UserDto>> getAllUsers(){
+    public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> allUsers = userService.findAllUsers();
         List<UserDto> allUsersImmutable = List.of(allUsers.toArray(new UserDto[]{}));
 
-        if (allUsersImmutable.isEmpty()){
-            return ResponseEntity.notFound().build();
+        if (allUsersImmutable.isEmpty()) {
+            throw new EntityNotFoundException("Users");
         }
 
         return ResponseEntity.ok(allUsersImmutable);
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<UserDto> getUserById(@PathVariable String id){
-        try{
+    public ResponseEntity<UserDto> getUserById(@PathVariable String id) {
+        try {
             UserDto userDto = userService.findUserById(id);
             return ResponseEntity.ok(userDto);
-        } catch (Exception e){
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            throw new EntityNotFoundException("User");
         }
     }
 
     @GetMapping("/email/{email}")
-    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email){
-        try{
+    public ResponseEntity<UserDto> getUserByEmail(@PathVariable String email) {
+        try {
             UserDto userDto = userService.findUserByEmail(email);
             return ResponseEntity.ok(userDto);
-        } catch (Exception e){
-            return ResponseEntity.notFound().build();
+        } catch (Exception e) {
+            throw new EntityNotFoundException("User");
         }
     }
 
     @PostMapping
-    public ResponseEntity<?> addUser(@RequestBody String json){
-        try{
-            JSONObject jsonObject = new JSONObject(json);
+    public ResponseEntity<?> addUser(@RequestBody String json) {
+        JSONObject jsonObject = new JSONObject(json);
+        jsonObject.put("password", passwordEncodeSecurity.encoder().encode(jsonObject.getString("password")));
+        jsonValidator.validator(jsonObject);
 
-            try {
-                if (userService.findUserByEmail(jsonObject.optString("email")) != null) {
-                    throw new Exception(
-                            "There is an account with that email adress:" + jsonObject.getString("email"));
-                }
-
-            } catch (Exception e) {
-
-                jsonObject.put("password", passwordEncodeSecurity.encoder().encode(jsonObject.getString("password")));
-
-                jsonValidator.validator(jsonObject);
-                userService.addUser(jsonObject);
-            }
-
+        try {
+            userService.addUser(jsonObject);
             return ResponseEntity.status(HttpStatus.CREATED).body(jsonObject.toMap());
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("User_email_key")) {
+                throw new UserAlreadyExistsException("There is an account with that email adress: " + jsonObject.getString("email"));
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Data integrity violation"));
         }
+
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editUser(@RequestBody String json, @PathVariable String id){
-        try{
-            UserDto existingUserDto = userService.findUserById(id);
-            JSONObject jsonObject = new JSONObject(json);
+    public ResponseEntity<?> editUser(@RequestBody String json, @PathVariable String id) {
+        UserDto existingUserDto;
 
-            JSONObject updatedUser = new JSONObject();
+        try {
+            existingUserDto = userService.findUserById(id);
+        } catch (NoSuchElementException e) {
+            throw new EntityNotFoundException("User");
+        }
 
-            updatedUser.put("password", jsonObject.has("password") ? passwordEncodeSecurity.encoder().encode(jsonObject.getString("password")): existingUserDto.password());
-            updatedUser.put("email", jsonObject.has("email") ? jsonObject.getString("email"): existingUserDto.email());
-            updatedUser.put("name", jsonObject.has("name") ? jsonObject.getString("name"): existingUserDto.name());
-            updatedUser.put("surname", jsonObject.has("surname") ? jsonObject.getString("surname"): existingUserDto.surname());
+        JSONObject jsonObject = new JSONObject(json);
 
-            jsonValidator.validator(updatedUser);
+        JSONObject updatedUser = new JSONObject();
 
+        updatedUser.put("password", jsonObject.has("password") ? passwordEncodeSecurity.encoder().encode(jsonObject.getString("password")) : existingUserDto.password());
+        updatedUser.put("email", jsonObject.has("email") ? jsonObject.getString("email") : existingUserDto.email());
+        updatedUser.put("name", jsonObject.has("name") ? jsonObject.getString("name") : existingUserDto.name());
+        updatedUser.put("surname", jsonObject.has("surname") ? jsonObject.getString("surname") : existingUserDto.surname());
+
+        jsonValidator.validator(updatedUser);
+
+        try {
             userService.updateUser(updatedUser, id);
-
             return ResponseEntity.ok(updatedUser.toMap());
-
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        } catch (DataIntegrityViolationException e) {
+            if (e.getMessage().contains("User_email_key")) {
+                throw new UserAlreadyExistsException("There is an account with that email adress: " + updatedUser.getString("email"));
+            }
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Data integrity violation"));
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable String id){
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
         try {
-            try {
-                UserDto user = userService.findUserById(id);
-            } catch (Exception e){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "User not found"));
-            }
+            UserDto user = userService.findUserById(id);
+
             userService.deleteUser(id);
             return ResponseEntity.noContent().build();
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            throw new EntityNotFoundException("User to delete");
         }
     }
 
-    //TODO: password encrypt, file handling
 
 }

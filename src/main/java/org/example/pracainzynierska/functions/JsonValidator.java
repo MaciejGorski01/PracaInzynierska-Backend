@@ -6,6 +6,7 @@ import com.networknt.schema.JsonSchema;
 import com.networknt.schema.JsonSchemaFactory;
 import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
+import org.example.pracainzynierska.exceptions.ValidationException;
 import org.json.JSONObject;
 import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
 
@@ -47,10 +48,11 @@ public class JsonValidator {
                 for (ValidationMessage message : validationMessages) {
                     System.out.println("Błąd walidacji: " + message.getMessage());
                 }
-                throw new RuntimeException("JSON nie spełnia wymagań schematu.");
+                throw new ValidationException("JSON nie spełnia wymagań schematu. ");
             }
+
         } catch (Exception e){
-            throw new RuntimeException("JSON nie spełnia wymagań schematu: " + e.getMessage(), e);
+            throw new ValidationException("JSON nie spełnia wymagań schematu.", e.getCause());
         }
     }
 }
