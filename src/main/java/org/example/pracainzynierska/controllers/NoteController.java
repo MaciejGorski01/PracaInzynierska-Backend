@@ -12,7 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -55,11 +62,33 @@ public class NoteController {
 
 
     @PostMapping
-    public ResponseEntity<?> createNote(@RequestBody String json) {
+    public ResponseEntity<?> createNote(@RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("data") String json) {
         JSONObject jsonObject = new JSONObject(json);
         jsonValidator.validator(jsonObject);
 
         try {
+
+            String fileUrl = null;
+            if (file != null){
+                Path uploadPath = Paths.get("src/main/resources/static/uploaded-files");
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+
+                String fileName = file.getOriginalFilename();
+                String filePath = uploadPath + File.separator + fileName;
+//                file.transferTo(new File(filePath));
+                var targetFile = new File(filePath);
+                Files.copy(file.getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                fileUrl = filePath;
+
+            }
+
+            if (fileUrl != null) {
+                jsonObject.put("fileUrl", fileUrl);
+            }
+
             noteService.addNote(jsonObject);
             return ResponseEntity.status(HttpStatus.CREATED).body(jsonObject.toMap());
 
@@ -68,6 +97,8 @@ public class NoteController {
                 throw new ForeignKeyViolationException("Invalid foreign key for note_owner_id");
             }
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "Data integrity violation"));
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", "File upload failed"));
         }
     }
 

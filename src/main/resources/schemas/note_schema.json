@@ -39,6 +39,6 @@
       "type": "string"
     }
   },
-  "required": ["title", "tag", "favourite", "content", "color", "fileUrl"],
+  "required": ["title", "tag", "favourite", "content", "color"],
   "additionalProperties": false
 }
