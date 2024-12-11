@@ -29,7 +29,8 @@ public class Security {
                             .permitAll();
                     registry.anyRequest().authenticated();
                 })
-                //.formLogin(l -> l.loginProcessingUrl("authentication/login").permitAll())
+                .cors(Customizer.withDefaults())
+                .formLogin(l -> l.loginProcessingUrl("authentication/login").permitAll())
                 .httpBasic(Customizer.withDefaults())
                 //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();

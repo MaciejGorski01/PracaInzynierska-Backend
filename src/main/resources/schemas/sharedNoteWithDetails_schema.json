@@ -36,7 +36,7 @@
     },
     "fileUrl": {
       "description": "Path of file attached to shared note",
-      "type": "string"
+      "type": ["string", "null"]
     }
   },
   "required": ["note_id", "shared_with_user_email", "title", "tag", "content"]

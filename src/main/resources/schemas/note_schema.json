@@ -32,7 +32,7 @@
     },
     "fileUrl": {
       "description": "Url of a file attached to the note",
-      "type": "string"
+      "type": ["string", "null"]
     },
     "note_owner_id": {
       "description": "Note's owner ID",
