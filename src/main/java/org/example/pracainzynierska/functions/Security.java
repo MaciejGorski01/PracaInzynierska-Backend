@@ -11,10 +11,16 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.cors.CorsConfiguration;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@CrossOrigin
 public class Security {
 
     private final UserService userService;
@@ -25,14 +31,28 @@ public class Security {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/users")
-                            .permitAll();
-                    registry.anyRequest().authenticated();
+                    registry.requestMatchers("/", "/login", "/register", "/users")
+                            .permitAll()
+                            .anyRequest().authenticated();
                 })
-                .cors(Customizer.withDefaults())
-                .formLogin(l -> l.loginProcessingUrl("authentication/login").permitAll())
+                .cors(cors -> cors.configurationSource(request -> {
+                    // Tutaj konfiguracja CORS, jeśli chcesz to skonfigurować bezpośrednio w Security
+                    var corsConfig = new CorsConfiguration();
+                    corsConfig.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                    corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
+                    corsConfig.setAllowCredentials(true);
+                    corsConfig.setAllowedHeaders(Collections.singletonList("*"));
+                    return corsConfig;
+                }))
+                .formLogin(l -> {
+                        l.loginPage("/login")
+                        .defaultSuccessUrl("http://localhost:3000/main", true)
+                        .failureUrl("http://localhost:3000/login?error=true")
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        .permitAll();
+                })
                 .httpBasic(Customizer.withDefaults())
-                //.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .build();
     }
 
