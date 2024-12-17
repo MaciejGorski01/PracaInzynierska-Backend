@@ -1,5 +1,6 @@
 package org.example.pracainzynierska.functions;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.pracainzynierska.services.UserService;
 import org.springframework.context.annotation.Bean;
@@ -11,6 +12,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.cors.CorsConfiguration;
 
@@ -46,16 +49,35 @@ public class Security {
                 }))
                 .formLogin(l -> {
                         l.loginPage("/login")
-                        .defaultSuccessUrl("http://localhost:3000/main", true)
-                        .failureUrl("http://localhost:3000/login?error=true")
-                        .usernameParameter("username")
+                                .successHandler(authenticationSuccessHandler()) // Obsługa sukcesu
+                                .failureHandler(authenticationFailureHandler()) // Obsługa niepowodzenia
+                                .usernameParameter("username")
                         .passwordParameter("password")
                         .permitAll();
                 })
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return (request, response, authentication) -> {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"status\":\"success\",\"message\":\"Logged in successfully\"}");
+            response.getWriter().flush();
+        };
+    }
 
+    @Bean
+    public AuthenticationFailureHandler authenticationFailureHandler() {
+        return (request, response, exception) -> {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"status\":\"error\",\"message\":\"Invalid username or password\"}");
+            response.getWriter().flush();
+        };
+    }
 
     @Bean
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
