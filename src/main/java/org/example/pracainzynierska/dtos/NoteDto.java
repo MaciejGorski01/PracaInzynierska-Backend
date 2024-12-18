@@ -20,5 +20,7 @@ public record NoteDto(
 
         String color,
 
-        String fileUrl
+        String fileUrl,
+
+        String note_owner_id
 ) { }

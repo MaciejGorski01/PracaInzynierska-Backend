@@ -34,7 +34,7 @@ public class Security {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> {
-                    registry.requestMatchers("/", "/login", "/register", "/users")
+                    registry.requestMatchers("/", "/login", "/register", "/users", "/uploaded-files/**")
                             .permitAll()
                             .anyRequest().authenticated();
                 })

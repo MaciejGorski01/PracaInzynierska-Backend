@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -67,21 +68,26 @@ public class NoteController {
         jsonValidator.validator(jsonObject);
 
         try {
+            String userId = jsonObject.getString("note_owner_id");
+
+            if (userId == null || userId.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "User ID is missing"));
+            }
 
             String fileUrl = null;
             if (file != null){
-                Path uploadPath = Paths.get("src/main/resources/static/uploaded-files");
+                Path uploadPath = Paths.get("src/main/resources/static/uploaded-files", userId);
                 if (!Files.exists(uploadPath)) {
                     Files.createDirectories(uploadPath);
                 }
 
-                String fileName = file.getOriginalFilename();
+                String fileName = file.getOriginalFilename().replace(" ", "_");
                 String filePath = uploadPath + File.separator + fileName;
-//                file.transferTo(new File(filePath));
                 var targetFile = new File(filePath);
                 Files.copy(file.getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-                fileUrl = filePath;
+                Path fileUrlPath = Paths.get("uploaded-files/", userId);
+                fileUrl = fileUrlPath + File.separator + fileName;
 
             }
 
@@ -143,10 +149,26 @@ public class NoteController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteNote(@PathVariable String id) {
+    public ResponseEntity<?> deleteNote(@PathVariable String id, @RequestBody(required = false) String filePath) {
         try {
             NoteDto note = noteService.findNoteById(id);
 
+            if (filePath != null && !filePath.isBlank()) {
+                JSONObject filePathName = new JSONObject(filePath);
+
+                if (filePathName.has("filePath")) {
+                    String filePathString = filePathName.getString("filePath").replace("\\", "/");
+                    Path path = Paths.get("src/main/resources/static/", filePathString);
+
+                    if (Files.exists(path)) {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException("Failed to delete file: " + filePathString, e);
+                        }
+                    }
+                }
+            }
             noteService.deleteNote(id);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {

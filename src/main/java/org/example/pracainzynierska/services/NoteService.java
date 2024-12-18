@@ -45,7 +45,7 @@ public class NoteService {
     }
 
     public NoteDto mapToNoteDto(Note note){
-        NoteDto noteDto = new NoteDto(note.getId(), note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getColor(), note.getFileUrl());
+        NoteDto noteDto = new NoteDto(note.getId(), note.getTitle(), note.getTag(), note.getFavourite(), note.getContent(), note.getColor(), note.getFileUrl(), note.getNote_owner_id());
         return noteDto;
     }
 }
