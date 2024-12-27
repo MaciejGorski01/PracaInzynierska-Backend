@@ -3,11 +3,9 @@ package org.example.pracainzynierska.controllers;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,9 +13,10 @@ import java.nio.file.Paths;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/uploaded-files")
 public class FileController {
 
-    @GetMapping("/uploaded-files/{userId}/{fileName}")
+    @GetMapping("/{userId}/{fileName}")
     public ResponseEntity<Resource> getFile(@PathVariable String userId, @PathVariable String fileName) {
         try {
             Path filePath = Paths.get("src/main/resources/static/uploaded-files/" + userId + "/" + fileName);
@@ -36,4 +35,27 @@ public class FileController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+
+//    @DeleteMapping("/")
+//    public ResponseEntity<String> removeFile(@PathVariable String userId, @PathVariable String fileName) {
+//        try {
+//            Path filePath = Paths.get("src/main/resources/static/uploaded-files/" + userId + "/" + fileName);
+//            File file = filePath.toFile();
+//
+//            if (file.exists() && file.isFile()) {
+//                boolean deleted = file.delete();
+//
+//                if (deleted) {
+//                    return ResponseEntity.ok("File deleted successfully.");
+//                } else {
+//                    return ResponseEntity.status(500).body("Failed to delete the file.");
+//                }
+//            } else {
+//                return ResponseEntity.notFound().body("File not found.");
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body("Error occurred while deleting the file.");
+//        }
+//    }
 }

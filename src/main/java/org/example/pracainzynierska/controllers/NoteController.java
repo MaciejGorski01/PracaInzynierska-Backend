@@ -3,14 +3,12 @@ package org.example.pracainzynierska.controllers;
 import org.example.pracainzynierska.dtos.NoteDto;
 import org.example.pracainzynierska.exceptions.EntityNotFoundException;
 import org.example.pracainzynierska.exceptions.ForeignKeyViolationException;
-import org.example.pracainzynierska.exceptions.ValidationException;
 import org.example.pracainzynierska.functions.JsonValidator;
 import org.example.pracainzynierska.services.NoteService;
 import org.json.JSONObject;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -121,7 +119,7 @@ public class NoteController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editNote(@PathVariable String id, @RequestBody String json) {
+    public ResponseEntity<?> editNote(@PathVariable String id, @RequestParam(value = "file", required = false) MultipartFile file, @RequestParam("data") String json) {
         NoteDto existingNoteDto;
 
         try {
@@ -131,21 +129,66 @@ public class NoteController {
         }
 
         JSONObject jsonObject = new JSONObject(json);
+        //JSONObject updatedNote = new JSONObject();
 
-        JSONObject updatedNote = new JSONObject();
 
-        updatedNote.put("title", jsonObject.has("title") ? jsonObject.getString("title") : existingNoteDto.title());
-        updatedNote.put("tag", jsonObject.has("tag") ? jsonObject.getString("tag") : existingNoteDto.tag());
-        updatedNote.put("favourite", jsonObject.has("favourite") ? jsonObject.getBoolean("favourite") : existingNoteDto.favourite());
-        updatedNote.put("content", jsonObject.has("content") ? jsonObject.getString("content") : existingNoteDto.content());
-        updatedNote.put("color", jsonObject.has("color") ? jsonObject.getString("color") : existingNoteDto.color());
-        updatedNote.put("fileUrl", jsonObject.has("fileUrl") ? jsonObject.getString("fileUrl") : existingNoteDto.fileUrl());
 
-        jsonValidator.validator(updatedNote);
+//        updatedNote.put("title", jsonObject.has("title") ? jsonObject.getString("title") : existingNoteDto.title());
+//        updatedNote.put("tag", jsonObject.has("tag") ? jsonObject.getString("tag") : existingNoteDto.tag());
+//        updatedNote.put("favourite", jsonObject.has("favourite") ? jsonObject.getBoolean("favourite") : existingNoteDto.favourite());
+//        updatedNote.put("content", jsonObject.has("content") ? jsonObject.getString("content") : existingNoteDto.content());
+//        updatedNote.put("color", jsonObject.has("color") ? jsonObject.getString("color") : existingNoteDto.color());
+//        updatedNote.put("fileUrl", jsonObject.has("fileUrl") ? jsonObject.getString("fileUrl") : existingNoteDto.fileUrl());
 
-        noteService.updateNote(updatedNote, id);
 
-        return ResponseEntity.ok(updatedNote.toMap());
+        String newFileUrl = null;
+        if (file != null && !file.isEmpty()){
+            if (existingNoteDto.fileUrl() != null && !existingNoteDto.fileUrl().isEmpty()){
+                Path existingFilePath = Paths.get("src/main/resources/static", existingNoteDto.fileUrl());
+                try{
+                    Files.deleteIfExists(existingFilePath);
+                } catch (IOException e) {
+                    throw new RuntimeException("Faile to delete existing file: " + existingFilePath, e);
+                }
+            }
+
+            String userId = jsonObject.getString("note_owner_id");
+            Path uploadPath = Paths.get("src/main/resources/static/uploaded-files", userId);
+
+            if (!Files.exists(uploadPath)) {
+                try {
+                    Files.createDirectories(uploadPath);
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to create directories: " + uploadPath, e);
+                }
+            }
+
+            String fileName = file.getOriginalFilename().replace(" ", "_");
+            String filePath = uploadPath + File.separator + fileName;
+            var targetFile = new File(filePath);
+            try {
+                Files.copy(file.getInputStream(), targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to save file: " + filePath, e);
+            }
+
+            Path fileUrlPath = Paths.get("uploaded-files/", userId);
+            newFileUrl = fileUrlPath + File.separator + fileName;
+            //updatedNote.put("fileUrl", newFileUrl);
+            jsonObject.put("fileUrl", newFileUrl);
+
+        } else {
+//            updatedNote.put("fileUrl", existingNoteDto.fileUrl());
+            jsonObject.put("fileUrl", existingNoteDto.fileUrl());
+        }
+
+
+
+        jsonValidator.validator(jsonObject);
+
+        noteService.updateNote(jsonObject, id);
+
+        return ResponseEntity.ok(jsonObject.toMap());
     }
 
     @DeleteMapping("/{id}")
