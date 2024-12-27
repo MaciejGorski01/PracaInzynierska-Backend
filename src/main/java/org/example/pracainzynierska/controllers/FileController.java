@@ -1,11 +1,14 @@
 package org.example.pracainzynierska.controllers;
 
+import org.example.pracainzynierska.services.NoteService;
+import org.json.JSONObject;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,6 +18,13 @@ import java.nio.file.Paths;
 @CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/uploaded-files")
 public class FileController {
+
+    NoteService noteService;
+
+    public FileController(NoteService noteService) {
+        this.noteService = noteService;
+    }
+
 
     @GetMapping("/{userId}/{fileName}")
     public ResponseEntity<Resource> getFile(@PathVariable String userId, @PathVariable String fileName) {
@@ -37,25 +47,22 @@ public class FileController {
     }
 
 
-//    @DeleteMapping("/")
-//    public ResponseEntity<String> removeFile(@PathVariable String userId, @PathVariable String fileName) {
-//        try {
-//            Path filePath = Paths.get("src/main/resources/static/uploaded-files/" + userId + "/" + fileName);
-//            File file = filePath.toFile();
-//
-//            if (file.exists() && file.isFile()) {
-//                boolean deleted = file.delete();
-//
-//                if (deleted) {
-//                    return ResponseEntity.ok("File deleted successfully.");
-//                } else {
-//                    return ResponseEntity.status(500).body("Failed to delete the file.");
-//                }
-//            } else {
-//                return ResponseEntity.notFound().body("File not found.");
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Error occurred while deleting the file.");
-//        }
-//    }
+    @PutMapping("/remove/{id}")
+    public ResponseEntity<String> removeFile(@PathVariable String id, @RequestBody String fileUrl) {
+        if (fileUrl != null && !fileUrl.isEmpty()){
+            Path existingFilePath = Paths.get("src/main/resources/static/", fileUrl);
+
+            try{
+                Files.deleteIfExists(existingFilePath);
+
+                noteService.deleteFileUrl(id);
+
+                return ResponseEntity.ok("File deleted and fileUrl removed from the database successfully.");
+            } catch (IOException e) {
+                throw new RuntimeException("File to delete existing file: " + existingFilePath, e);
+            }
+        } else {
+            return ResponseEntity.badRequest().body("File URL is required.");
+        }
+    }
 }

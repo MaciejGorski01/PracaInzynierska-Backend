@@ -52,4 +52,11 @@ public class NoteRepository {
         jdbcTemplate.update(sql, jsonObject.toString(), id);
     }
 
+    public void deleteFileUrl(String id){
+        String sql = "UPDATE \"Note\" " +
+                "SET \"fileUrl\" = NULL " +
+                "WHERE \"Note\".id = ?;";
+        jdbcTemplate.update(sql, id);
+    }
+
 }
