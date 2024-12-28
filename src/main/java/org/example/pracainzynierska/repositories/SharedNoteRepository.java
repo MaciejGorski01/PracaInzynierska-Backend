@@ -66,9 +66,9 @@ public class SharedNoteRepository {
         jdbcTemplate.update(sql, id, jsonObject.toString());
     }
 
-    public void delete(String id){
-        String sql = "DELETE FROM \"SharedNote\" WHERE id = ?;";
-        jdbcTemplate.update(sql, id);
+    public void delete(String note_id, String shared_with_user_email){
+        String sql = "DELETE FROM \"SharedNote\" WHERE note_id = ? AND shared_with_user_email = ?;";
+        jdbcTemplate.update(sql, note_id, shared_with_user_email);
     }
 
 }

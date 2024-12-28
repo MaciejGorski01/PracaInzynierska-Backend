@@ -44,8 +44,8 @@ public class SharedNoteService {
         sharedNoteRepository.create(UUID.randomUUID().toString(), jsonObject);
     }
 
-    public void deleteSharedNote(String id){
-        sharedNoteRepository.delete(id);
+    public void deleteSharedNote(String id, String email){
+        sharedNoteRepository.delete(id, email);
     }
 
 

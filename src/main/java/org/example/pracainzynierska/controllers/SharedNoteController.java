@@ -83,11 +83,11 @@ public class SharedNoteController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteSharedNote(@PathVariable String id) {
+    @DeleteMapping("/{note_id}/{email}")
+    public ResponseEntity<?> deleteSharedNote(@PathVariable String note_id, @PathVariable String email) {
         try {
-            SharedNoteDto sharedNote = sharedNoteService.findSharedNote(id);
-            sharedNoteService.deleteSharedNote(id);
+            SharedNoteWithDetailsDto sharedNote = sharedNoteService.findUserSharedNoteWithDetails(email, note_id);
+            sharedNoteService.deleteSharedNote(note_id, email);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             throw new EntityNotFoundException("Shared note");
