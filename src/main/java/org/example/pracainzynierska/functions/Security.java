@@ -39,7 +39,6 @@ public class Security {
                             .anyRequest().authenticated();
                 })
                 .cors(cors -> cors.configurationSource(request -> {
-                    // Tutaj konfiguracja CORS, jeśli chcesz to skonfigurować bezpośrednio w Security
                     var corsConfig = new CorsConfiguration();
                     corsConfig.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
                     corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));

@@ -22,19 +22,13 @@ public class JsonValidator {
         try {
             InputStream schemaStream = getClass().getClassLoader().getResourceAsStream(path);
             if (schemaStream == null) {
-                throw new IllegalStateException("Brak schematu");
+                throw new IllegalStateException("No schema found");
             }
-
-//            String schemaString = new String(schemaStream.readAllBytes(), StandardCharsets.UTF_8);
-//
-//            JSONObject rawSchema = new JSONObject(schemaString);
-//            JsonSchemaFactory schemaFactory = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7);
-//            this.jsonSchema = schemaFactory.getSchema(rawSchema.toString());
 
             this.jsonSchema = JsonSchemaFactory.getInstance(SpecVersion.VersionFlag.V7).getSchema(schemaStream);
 
         } catch (Exception e) {
-            throw new RuntimeException("Błąd podczas ładowania JSON Schema", e);
+            throw new RuntimeException("Error while loading JSON schema", e);
         }
     }
 
@@ -46,13 +40,13 @@ public class JsonValidator {
 
             if (!validationMessages.isEmpty()) {
                 for (ValidationMessage message : validationMessages) {
-                    System.out.println("Błąd walidacji: " + message.getMessage());
+                    System.out.println("Validation error: " + message.getMessage());
                 }
-                throw new ValidationException("JSON nie spełnia wymagań schematu. ");
+                throw new ValidationException("JSON does not meet schema standards. ");
             }
 
         } catch (Exception e){
-            throw new ValidationException("JSON nie spełnia wymagań schematu.", e.getCause());
+            throw new ValidationException("JSON does not meet schema standards.", e.getCause());
         }
     }
 }
