@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class NoteRepository {
@@ -32,11 +33,20 @@ public class NoteRepository {
         return jdbcTemplate.queryForObject(sql, new NoteMapper(), id);
     }
 
-    public void create(String id, JSONObject jsonObject) {
-        String sql = "INSERT INTO \"Note\" (id, title, tag, favourite, content, color, \"fileUrl\", note_owner_id) " +
-                "SELECT ?, title, tag, favourite, content, color, \"fileUrl\", note_owner_id " +
-                "FROM json_to_record(?::json) AS temp(id text, title text, tag text, favourite boolean, content text, color text, \"fileUrl\" text, note_owner_id text)";
-        jdbcTemplate.update(sql, id, jsonObject.toString());
+//    public void create(String id, JSONObject jsonObject) {
+//        String sql = "INSERT INTO \"Note\" (id, title, tag, favourite, content, color, \"fileUrl\", note_owner_id) " +
+//                "SELECT ?, title, tag, favourite, content, color, \"fileUrl\", note_owner_id " +
+//                "FROM json_to_record(?::json) AS temp(id text, title text, tag text, favourite boolean, content text, color text, \"fileUrl\" text, note_owner_id text)";
+//        jdbcTemplate.update(sql, id, jsonObject.toString());
+//    }
+
+    public int create(String id, JSONObject jsonObject) {
+        String sql = "SELECT insert_note_from_json(?::json, ?);";
+        Optional<Integer> result = Optional.ofNullable(
+                jdbcTemplate.queryForObject(sql, Integer.class, jsonObject.toString(), id)
+        );
+
+        return result.orElse(0);
     }
 
     public void delete(String id){
@@ -44,12 +54,21 @@ public class NoteRepository {
         jdbcTemplate.update(sql, id);
     }
 
-    public void update(JSONObject jsonObject, String id){
-        String sql = "UPDATE \"Note\" " +
-                "SET title = temp.title, tag = temp.tag, favourite = temp.favourite, content = temp.content, color = temp.color, \"fileUrl\" = temp.\"fileUrl\" \n " +
-                "FROM json_to_record(?::json) AS temp(title text, tag text, favourite boolean, content text, color text, \"fileUrl\" text) " +
-                "WHERE \"Note\".id = ?; ";
-        jdbcTemplate.update(sql, jsonObject.toString(), id);
+//    public void update(JSONObject jsonObject, String id){
+//        String sql = "UPDATE \"Note\" " +
+//                "SET title = temp.title, tag = temp.tag, favourite = temp.favourite, content = temp.content, color = temp.color, \"fileUrl\" = temp.\"fileUrl\" \n " +
+//                "FROM json_to_record(?::json) AS temp(title text, tag text, favourite boolean, content text, color text, \"fileUrl\" text) " +
+//                "WHERE \"Note\".id = ?; ";
+//        jdbcTemplate.update(sql, jsonObject.toString(), id);
+//    }
+
+    public int update(JSONObject jsonObject, String id) {
+        String sql = "SELECT update_note_from_json(?::json, ?);";
+        Optional<Integer> result = Optional.ofNullable(
+                jdbcTemplate.queryForObject(sql, Integer.class, jsonObject.toString(), id)
+        );
+
+        return result.orElse(0);
     }
 
     public void deleteFileUrl(String id){

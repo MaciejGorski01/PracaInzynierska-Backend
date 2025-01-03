@@ -1,0 +1,116 @@
+Update Note
+CREATE OR REPLACE FUNCTION update_note_from_json(json_data json, note_id text)
+RETURNS integer AS $$
+DECLARE
+    rows_updated integer;
+BEGIN
+    UPDATE "Note"
+    SET title = temp.title,
+        tag = temp.tag,
+        favourite = temp.favourite,
+        content = temp.content,
+        color = temp.color,
+        "fileUrl" = temp."fileUrl"
+    FROM json_to_record(json_data) AS temp(
+        title text,
+        tag text,
+        favourite boolean,
+        content text,
+        color text,
+        "fileUrl" text
+    )
+    WHERE "Note".id = note_id;
+
+    GET DIAGNOSTICS rows_updated = ROW_COUNT;
+    RETURN rows_updated;
+END;
+$$ LANGUAGE plpgsql;
+
+
+Add Note
+CREATE OR REPLACE FUNCTION insert_note_from_json(json_data json, id text)
+RETURNS integer AS $$
+DECLARE
+    rows_updated integer;
+BEGIN
+    INSERT INTO "Note" (id, title, tag, favourite, content, color, "fileUrl", note_owner_id)
+    SELECT id, temp.title, temp.tag, temp.favourite, temp.content, temp.color, temp."fileUrl", temp.note_owner_id
+    FROM json_to_record(json_data) AS temp(
+        title text,
+        tag text,
+        favourite boolean,
+        content text,
+        color text,
+        "fileUrl" text,
+        note_owner_id text
+    );
+
+    GET DIAGNOSTICS rows_updated = ROW_COUNT;
+    RETURN rows_updated;
+END;
+$$ LANGUAGE plpgsql;
+
+
+Add SharedNote
+CREATE OR REPLACE FUNCTION insert_sharedNote_from_json(id text, json_data json)
+RETURNS integer AS $$
+DECLARE
+    rows_updated integer;
+BEGIN
+    INSERT INTO "SharedNote" (id, note_id, shared_with_user_email)
+    SELECT id, note_id, shared_with_user_email
+    FROM json_to_record(json_data) AS temp(
+        note_id text,
+		shared_with_user_email text
+    );
+
+    GET DIAGNOSTICS rows_updated = ROW_COUNT;
+    RETURN rows_updated;
+END;
+$$ LANGUAGE plpgsql;
+
+
+Add User
+CREATE OR REPLACE FUNCTION insert_user_from_json(id text, json_data json)
+RETURNS integer AS $$
+DECLARE
+    rows_updated integer;
+BEGIN
+    INSERT INTO "User" (id, password, email, name, surname)
+    SELECT id, password, email, name, surname
+    FROM json_to_record(json_data) AS temp(
+        password text,
+		email text,
+		name text,
+		surname text
+    );
+
+    GET DIAGNOSTICS rows_updated = ROW_COUNT;
+    RETURN rows_updated;
+END;
+$$ LANGUAGE plpgsql;
+
+
+Update User
+CREATE OR REPLACE FUNCTION update_user_from_json(json_data json, user_id text)
+RETURNS integer AS $$
+DECLARE
+    rows_updated integer;
+BEGIN
+    UPDATE "User"
+    SET password = temp.password,
+        email = temp.email,
+        name = temp.name,
+        surname = temp.surname
+    FROM json_to_record(json_data) AS temp(
+        password text,
+        email text,
+        name text,
+        surname text
+    )
+    WHERE "User".id = user_id;
+
+    GET DIAGNOSTICS rows_updated = ROW_COUNT;
+    RETURN rows_updated;
+END;
+$$ LANGUAGE plpgsql;

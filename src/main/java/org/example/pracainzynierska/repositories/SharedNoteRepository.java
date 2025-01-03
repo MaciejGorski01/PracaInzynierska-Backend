@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class SharedNoteRepository {
@@ -59,11 +60,20 @@ public class SharedNoteRepository {
         return jdbcTemplate.queryForObject(sql, new SharedNoteWithDetailsMapper(), email, id);
     }
 
-    public void create(String id, JSONObject jsonObject){
-        String sql = "INSERT INTO \"SharedNote\" (id, note_id, shared_with_user_email) " +
-                "SELECT ?, note_id, shared_with_user_email " +
-                "FROM json_to_record(?::json) AS temp(id text, note_id text, shared_with_user_email text)";
-        jdbcTemplate.update(sql, id, jsonObject.toString());
+//    public void create(String id, JSONObject jsonObject){
+//        String sql = "INSERT INTO \"SharedNote\" (id, note_id, shared_with_user_email) " +
+//                "SELECT ?, note_id, shared_with_user_email " +
+//                "FROM json_to_record(?::json) AS temp(/*id text,*/ note_id text, shared_with_user_email text)";
+//        jdbcTemplate.update(sql, id, jsonObject.toString());
+//    }
+
+    public int create(String id, JSONObject jsonObject){
+        String sql = "SELECT insert_sharednote_from_json(?, ?::json);";
+        Optional<Integer> result = Optional.ofNullable(
+                jdbcTemplate.queryForObject(sql, Integer.class, id, jsonObject.toString())
+        );
+
+        return result.orElse(0);
     }
 
     public void delete(String note_id, String shared_with_user_email){

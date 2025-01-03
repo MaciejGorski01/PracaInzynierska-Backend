@@ -33,11 +33,20 @@ public class UserRepository {
         return jdbcTemplate.queryForObject(sql, new UserMapper(), id);
     }
 
-    public void create(String id, JSONObject jsonObject){
-        String sql = "INSERT INTO \"User\" (id, password, email, name, surname) " +
-                "SELECT ?, password, email, name, surname " +
-                "FROM json_to_record(?::json) AS temp(id text, password text, email text, name text, surname text)";
-        jdbcTemplate.update(sql, id, jsonObject.toString());
+//    public void create(String id, JSONObject jsonObject){
+//        String sql = "INSERT INTO \"User\" (id, password, email, name, surname) " +
+//                "SELECT ?, password, email, name, surname " +
+//                "FROM json_to_record(?::json) AS temp(id text, password text, email text, name text, surname text)";
+//        jdbcTemplate.update(sql, id, jsonObject.toString());
+//    }
+
+    public int create(String id, JSONObject jsonObject){
+        String sql = "SELECT insert_user_from_json(?, ?::json);";
+        Optional<Integer> result = Optional.ofNullable(
+                jdbcTemplate.queryForObject(sql, Integer.class, id, jsonObject.toString())
+        );
+
+        return result.orElse(0);
     }
 
     public List<User> findUserByEmail(String email){
@@ -45,12 +54,21 @@ public class UserRepository {
         return jdbcTemplate.queryForObject(sql, new UserMapper(), email);
     }
 
-    public void update(JSONObject jsonObject, String id){
-        String sql = "UPDATE \"User\" " +
-                "SET password = temp.password, email = temp.email, name = temp.name, surname = temp.surname " +
-                "FROM json_to_record(?::json) AS temp(password text, email text, name text, surname text) " +
-                "WHERE \"User\".id = ?; ";
-        jdbcTemplate.update(sql, jsonObject.toString(), id);
+//    public void update(JSONObject jsonObject, String id){
+//        String sql = "UPDATE \"User\" " +
+//                "SET password = temp.password, email = temp.email, name = temp.name, surname = temp.surname " +
+//                "FROM json_to_record(?::json) AS temp(password text, email text, name text, surname text) " +
+//                "WHERE \"User\".id = ?; ";
+//        jdbcTemplate.update(sql, jsonObject.toString(), id);
+//    }
+
+    public int update(JSONObject jsonObject, String id){
+        String sql = "SELECT update_user_from_json(?::json, ?);";
+        Optional<Integer> result = Optional.ofNullable(
+                jdbcTemplate.queryForObject(sql, Integer.class, jsonObject.toString(), id)
+        );
+
+        return result.orElse(0);
     }
 
     public void delete(String id){
