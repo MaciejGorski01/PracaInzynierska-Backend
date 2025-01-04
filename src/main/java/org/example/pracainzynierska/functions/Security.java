@@ -38,18 +38,11 @@ public class Security {
                             .permitAll()
                             .anyRequest().authenticated();
                 })
-                .cors(cors -> cors.configurationSource(request -> {
-                    var corsConfig = new CorsConfiguration();
-                    corsConfig.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
-                    corsConfig.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
-                    corsConfig.setAllowCredentials(true);
-                    corsConfig.setAllowedHeaders(Collections.singletonList("*"));
-                    return corsConfig;
-                }))
+                .cors(Customizer.withDefaults())
                 .formLogin(l -> {
                         l.loginPage("/login")
-                                .successHandler(authenticationSuccessHandler()) // Obsługa sukcesu
-                                .failureHandler(authenticationFailureHandler()) // Obsługa niepowodzenia
+                                .successHandler(authenticationSuccessHandler())
+                                .failureHandler(authenticationFailureHandler())
                                 .usernameParameter("username")
                         .passwordParameter("password")
                         .permitAll();

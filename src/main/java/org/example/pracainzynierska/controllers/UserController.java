@@ -15,6 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -123,6 +128,19 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
         try {
             UserDto user = userService.findUserById(id);
+
+            Path userFilesPath = Paths.get("src/main/resources/static/uploaded-files", id);
+            if (Files.exists(userFilesPath)) {
+                Files.walk(userFilesPath)
+                        .sorted(Comparator.reverseOrder()) // Sortowanie od najgłębszego do najwyższego poziomu
+                        .forEach(path -> {
+                            try {
+                                Files.delete(path);
+                            } catch (IOException e) {
+                                throw new RuntimeException("Failed to delete file: " + path, e);
+                            }
+                        });
+            }
 
             userService.deleteUser(id);
             return ResponseEntity.noContent().build();
