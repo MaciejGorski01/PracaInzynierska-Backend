@@ -1,13 +1,11 @@
 package org.example.pracainzynierska.controllers;
 
 import org.example.pracainzynierska.services.NoteService;
-import org.json.JSONObject;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

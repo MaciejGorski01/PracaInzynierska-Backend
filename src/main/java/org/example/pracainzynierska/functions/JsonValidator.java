@@ -8,10 +8,8 @@ import com.networknt.schema.SpecVersion;
 import com.networknt.schema.ValidationMessage;
 import org.example.pracainzynierska.exceptions.ValidationException;
 import org.json.JSONObject;
-import org.springframework.boot.autoconfigure.rsocket.RSocketProperties;
 
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 public class JsonValidator {

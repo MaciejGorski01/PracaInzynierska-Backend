@@ -1,6 +1,5 @@
 package org.example.pracainzynierska.mappers;
 
-import org.aspectj.bridge.IMessage;
 import org.example.pracainzynierska.functions.JsonValidator;
 import org.example.pracainzynierska.models.Note;
 import org.json.JSONArray;

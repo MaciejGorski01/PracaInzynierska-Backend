@@ -15,10 +15,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.cors.CorsConfiguration;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -41,11 +37,11 @@ public class Security {
                 .cors(Customizer.withDefaults())
                 .formLogin(l -> {
                         l.loginPage("/login")
-                                .successHandler(authenticationSuccessHandler())
-                                .failureHandler(authenticationFailureHandler())
-                                .usernameParameter("username")
-                        .passwordParameter("password")
-                        .permitAll();
+                            .successHandler(authenticationSuccessHandler())
+                            .failureHandler(authenticationFailureHandler())
+                            .usernameParameter("username")
+                            .passwordParameter("password")
+                            .permitAll();
                 })
                 .httpBasic(Customizer.withDefaults())
                 .build();
