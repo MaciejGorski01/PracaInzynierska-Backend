@@ -129,17 +129,6 @@ public class NoteController {
         }
 
         JSONObject jsonObject = new JSONObject(json);
-        //JSONObject updatedNote = new JSONObject();
-
-
-
-//        updatedNote.put("title", jsonObject.has("title") ? jsonObject.getString("title") : existingNoteDto.title());
-//        updatedNote.put("tag", jsonObject.has("tag") ? jsonObject.getString("tag") : existingNoteDto.tag());
-//        updatedNote.put("favourite", jsonObject.has("favourite") ? jsonObject.getBoolean("favourite") : existingNoteDto.favourite());
-//        updatedNote.put("content", jsonObject.has("content") ? jsonObject.getString("content") : existingNoteDto.content());
-//        updatedNote.put("color", jsonObject.has("color") ? jsonObject.getString("color") : existingNoteDto.color());
-//        updatedNote.put("fileUrl", jsonObject.has("fileUrl") ? jsonObject.getString("fileUrl") : existingNoteDto.fileUrl());
-
 
         String newFileUrl = null;
         if (file != null && !file.isEmpty()){
@@ -174,11 +163,9 @@ public class NoteController {
 
             Path fileUrlPath = Paths.get("uploaded-files/", userId);
             newFileUrl = fileUrlPath + File.separator + fileName;
-            //updatedNote.put("fileUrl", newFileUrl);
             jsonObject.put("fileUrl", newFileUrl);
 
         } else {
-//            updatedNote.put("fileUrl", existingNoteDto.fileUrl());
             jsonObject.put("fileUrl", existingNoteDto.fileUrl());
         }
 

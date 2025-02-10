@@ -132,7 +132,7 @@ public class UserController {
             Path userFilesPath = Paths.get("src/main/resources/static/uploaded-files", id);
             if (Files.exists(userFilesPath)) {
                 Files.walk(userFilesPath)
-                        .sorted(Comparator.reverseOrder()) // Sortowanie od najgłębszego do najwyższego poziomu
+                        .sorted(Comparator.reverseOrder())
                         .forEach(path -> {
                             try {
                                 Files.delete(path);
